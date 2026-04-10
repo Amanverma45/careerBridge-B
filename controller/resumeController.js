@@ -14,7 +14,7 @@ exports.uploadResume = async (req, res) => {
 
     // const fileUrl = `${req.protocol}://${req.get("host")}/uploads/${req.file.filename}`
     const protocol = req.headers["x-forwarded-proto"] || "https";
-   const fileUrl = req.file.secure_url 
+   const fileUrl = req.file.secure_url + "?fl_attachment=false"
     const updatedUser = await User.findByIdAndUpdate(
       userId,
       { resume: fileUrl },
