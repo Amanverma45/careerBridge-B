@@ -4,14 +4,11 @@ const cloudinary = require("../config/cloudinary")
 
 const storage = new CloudinaryStorage({
   cloudinary: cloudinary,
-  params: async (req, file) => {
-    return {
-      folder: "resumes",
-      resource_type: "auto",
-      type: "upload",
-      access_mode: "public",
-      public_id: Date.now() + "-" + file.originalname.split(".")[0]
-    }
+  params: {
+    folder: "resumes",
+    resource_type: "auto", 
+    
+    allowed_formats: ['pdf', 'doc', 'docx'], 
   }
 })
 

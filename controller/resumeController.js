@@ -15,12 +15,13 @@ exports.uploadResume = async (req, res) => {
 
     const user = await User.findById(userId)
 
-    if (user?.resume) {
-      const publicId = user.resume.split("/").pop().split(".")[0]
-      await cloudinary.uploader.destroy(`resumes/${publicId}`, {
-        resource_type: "auto"
-      })
-    }
+   if (user?.resume) {
+  const parts = user.resume.split('/');
+  const fileName = parts[parts.length - 1].split('.')[0]; 
+  const publicId = `resumes/${fileName}`; 
+  
+  await cloudinary.uploader.destroy(publicId, { resource_type: "raw" }); // PDF/DOC raw ya auto hote hain
+}
 
     const fileUrl = req.file.secure_url
 
