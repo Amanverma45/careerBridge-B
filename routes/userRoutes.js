@@ -46,4 +46,18 @@ router.post('/verifyOTP', (req, res) => {
   }
 })
 
+router.delete('/deleteResume/:id', async (req, res) => {
+  try {
+    const user = await User.findByIdAndUpdate(
+      req.params.id,
+      { resume: "" },
+      { new: true }
+    )
+
+    res.json({ message: "Resume deleted", user })
+  } catch (err) {
+    res.status(500).json({ message: err.message })
+  }
+})
+
 module.exports = router
