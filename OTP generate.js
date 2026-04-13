@@ -13,12 +13,17 @@ const sendOTP = async (email) => {
         console.log("Generated OTP:", otp)
          console.log("Stored OTP:", otpStore[normalizedEmail])
         const transporter = nodemailer.createTransport({
-            host: "sandbox.smtp.mailtrap.io",
-            port: 2525,   // 👈 ye use karo
-            auth: {
-                user: "ffef6419be9dde",   // 👈 screenshot se copy
-                pass: "ff219d6998b78e"    // 👈 screenshot se copy
-            }
+            // host: "sandbox.smtp.mailtrap.io",
+            // port: 2525,   // 👈 ye use karo
+            // auth: {
+            //     user: "ffef6419be9dde",   // 👈 screenshot se copy
+            //     pass: "ff219d6998b78e"    // 👈 screenshot se copy
+            // }
+            service: "gmail",
+  auth: {
+    user:'yourcareerbridge.app@gmail.com',        // 👈 apna gmail
+    pass: "ztdz rzmj hyxe wzbr"      // 👈 16 digit app password (no spaces)
+  }
         })
 
         const info = await transporter.sendMail({
