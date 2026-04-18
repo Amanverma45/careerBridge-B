@@ -23,7 +23,7 @@ exports.uploadResume = async (req, res) => {
   await cloudinary.uploader.destroy(publicId, { resource_type: "raw" }); // PDF/DOC raw ya auto hote hain
 }
 
-    const fileUrl = req.file.secure_url
+    const fileUrl = req.file.path  
 
     const updatedUser = await User.findByIdAndUpdate(
       userId,
