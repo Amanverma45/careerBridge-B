@@ -24,10 +24,12 @@ exports.uploadResume = async (req, res) => {
 }
 
     const fileUrl = req.file.path  
+    const publicId = req.file.filename 
 
     const updatedUser = await User.findByIdAndUpdate(
       userId,
       { resume: fileUrl },
+      {resumePublicId: publicId}   ,
       { new: true }
     )
 
