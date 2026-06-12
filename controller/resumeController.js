@@ -38,12 +38,13 @@ exports.deleteResume = async (req, res) => {
   try {
     const userId = req.params.id;
     const user = await User.findById(userId);
+    console.log("RESUME URL =", user.resume)
+console.log("PUBLIC ID =", user.resumePublicId)
 
     if (!user || !user.resumePublicId) {
       return res.status(404).json({ message: "No resume found to delete" });
     }
 
-    // Direct saved Public ID use karein, split karne ki zaroorat nahi
     await cloudinary.uploader.destroy(user.resumePublicId, { resource_type: "raw" });
 
     user.resume = "";
