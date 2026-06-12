@@ -35,6 +35,7 @@ exports.uploadResume = async (req, res) => {
 };
 
 exports.deleteResume = async (req, res) => {
+  console.log("DELETE API HIT");
   try {
     const userId = req.params.id;
     const user = await User.findById(userId);
@@ -53,7 +54,11 @@ console.log("PUBLIC ID =", user.resumePublicId)
 
     res.status(200).json({ message: "Resume deleted successfully" });
   } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
+  console.error("DELETE ERROR:", error);
+  res.status(500).json({
+    message: error.message,
+    stack: error.stack
+  });
+}
 };
 
