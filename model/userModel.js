@@ -10,7 +10,11 @@ const userSchema = new mongoose.Schema({
     resume: {
         type: String,
         default: ""
-    }
+    },
+    resumePublicId: {
+    type: String,
+    default: ""
+}
 })
 const user = new mongoose.model('user', userSchema)
 module.exports = user

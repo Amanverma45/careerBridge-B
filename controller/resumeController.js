@@ -10,17 +10,15 @@ exports.uploadResume = async (req, res) => {
 
     const user = await User.findById(userId);
 
-    // 1. Purana resume delete karein (Agar database mein ID saved hai)
     if (user && user.resumePublicId) {
       await cloudinary.uploader.destroy(user.resumePublicId, { resource_type: "raw" });
     }
 
-    // 2. Database update karein (Sahi syntax ke saath)
     const updatedUser = await User.findByIdAndUpdate(
       userId,
       { 
         resume: req.file.path, 
-        resumePublicId: req.file.filename // Dono ko ek hi object mein rakhein
+        resumePublicId: req.file.filename 
       }, 
       { new: true } // Ab ye sahi kaam karega
     );
