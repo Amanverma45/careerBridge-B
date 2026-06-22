@@ -62,3 +62,27 @@ console.log("PUBLIC ID =", user.resumePublicId)
 }
 };
 
+exports.viewResume = async (req, res) => {
+  try {
+    const userId = req.params.id;
+
+    const user = await User.findById(userId);
+
+    if (!user || !user.resume) {
+      return res.status(404).json({
+        message: "Resume not found"
+      });
+    }
+
+    res.status(200).json({
+      resume: user.resume,
+      resumePublicId: user.resumePublicId
+    });
+
+  } catch (error) {
+    console.error("VIEW ERROR:", error);
+    res.status(500).json({
+      message: error.message
+    });
+  }
+};

@@ -6,6 +6,7 @@ const upload = require("../middleware/multer")
 const { uploadResume, deleteResume } = require("../controller/resumeController")
 
 router.post("/uploadResume", upload.single("resume"), uploadResume)
+router.get("/viewResume/:id", resumeController.viewResume);
 router.delete("/deleteResume/:id", deleteResume)
 
 module.exports = router
