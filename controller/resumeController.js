@@ -39,14 +39,25 @@ exports.deleteResume = async (req, res) => {
   try {
     const userId = req.params.id;
     const user = await User.findById(userId);
-    console.log("RESUME URL =", user.resume)
-console.log("PUBLIC ID =", user.resumePublicId)
-
-    if (!user || !user.resumePublicId) {
-      return res.status(404).json({ message: "No resume found to delete" });
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
     }
 
-    await cloudinary.uploader.destroy(user.resumePublicId, { resource_type: "raw" });
+    console.log("RESUME URL =", user.resume);
+    console.log("PUBLIC ID =", user.resumePublicId);
+
+    if (!user.resume) {
+      return res.status(400).json({ message: "No resume found to delete" });
+    }
+
+    if (user.resumePublicId) {
+      const resourceType = user.resume.includes("/raw/upload") ? "raw" : "image";
+      try {
+        await cloudinary.uploader.destroy(user.resumePublicId, { resource_type: resourceType });
+      } catch (cloudinaryErr) {
+        console.error("Cloudinary destroy error (continuing DB clear):", cloudinaryErr);
+      }
+    }
 
     user.resume = "";
     user.resumePublicId = "";
@@ -54,12 +65,12 @@ console.log("PUBLIC ID =", user.resumePublicId)
 
     res.status(200).json({ message: "Resume deleted successfully" });
   } catch (error) {
-  console.error("DELETE ERROR:", error);
-  res.status(500).json({
-    message: error.message,
-    stack: error.stack
-  });
-}
+    console.error("DELETE ERROR:", error);
+    res.status(500).json({
+      message: error.message,
+      stack: error.stack
+    });
+  }
 };
 
 exports.viewResume = async (req, res) => {
