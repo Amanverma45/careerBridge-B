@@ -8,7 +8,7 @@ const saveUser = async (req, res) => {
         if (!name || !email || !password || !role) {
             return res.status(400).json({ message: "All fields required" })
         }
-        
+
         const hashpassword = await bcrypt.hash(password, 10)
         const newUser = new User({
             name,
@@ -28,7 +28,7 @@ const loginUser = async (req, res) => {
     const { email, password } = req.body
 
     try {
-        const user = await User.findOne({  email: email.toLowerCase() })
+        const user = await User.findOne({ email: email.toLowerCase() })
         if (!user) {
             return res.status(404).json({ message: "User not found" })
         }
@@ -41,7 +41,7 @@ const loginUser = async (req, res) => {
         const token = jwt.sign(
             { userId: user._id, email: user.email },
             "OUR_SECRETE_KEY",
-            { expiresIn: "1h" }
+            { expiresIn: "24h" }
         )
 
         res.status(200).json({
@@ -58,14 +58,14 @@ const loginUser = async (req, res) => {
 
 const updateUser = async (req, res) => {
     try {
-        const { name,skills,experience,bio } = req.body
+        const { name, skills, experience, bio } = req.body
         const userId = req.params.id
 
         const updatedUser = await User.findByIdAndUpdate(
             userId,
             {
 
-                 name ,
+                name,
                 skills,
                 experience,
                 bio,
