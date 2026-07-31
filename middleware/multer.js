@@ -5,12 +5,14 @@ const cloudinary = require("../config/cloudinary");
 const storage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: async (req, file) => { 
+    const ext = file.originalname.split('.').pop().toLowerCase();
+    const isPdf = ext === 'pdf';
     return {
       folder: "resumes",
-      resource_type: "auto",
+      resource_type: isPdf ? "image" : "raw",
       access_mode: "public",
       public_id: file.originalname.split('.')[0] + "_" + Date.now(), 
-      format: file.originalname.split('.').pop(), 
+      format: isPdf ? "pdf" : ext, 
     };
   },
 });
