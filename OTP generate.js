@@ -6,7 +6,7 @@ const sendOTP = async (email) => {
     try {
         const normalizedEmail = email.toLowerCase().trim()
 
-        const otp = Math.floor(1000 + Math.random() * 9000)
+        const otp = Math.floor(100000 + Math.random() * 900000)
 
         otpStore[normalizedEmail] = otp
 
@@ -25,8 +25,8 @@ const sendOTP = async (email) => {
             const info = await transporter.sendMail({
                 from: "yourcareerbridge.app@gmail.com",
                 to: email,
-                subject: "CareerBridge OTP",
-                text: `Your OTP is ${otp}`
+                subject: "CareerBridge OTP Verification",
+                text: `Your CareerBridge OTP is ${otp}. Please do not share it with anyone on call or SMS.`
             })
 
             console.log("Mail sent:", info.response)
