@@ -9,10 +9,16 @@ const saveUser = async (req, res) => {
             return res.status(400).json({ message: "All fields required" })
         }
 
+        const normalizedEmail = email.toLowerCase().trim()
+        const existingUser = await User.findOne({ email: normalizedEmail })
+        if (existingUser) {
+            return res.status(400).json({ message: "Email is already registered" })
+        }
+
         const hashpassword = await bcrypt.hash(password, 10)
         const newUser = new User({
             name,
-            email: email.toLowerCase(),
+            email: normalizedEmail,
             password: hashpassword,
             role
         })
