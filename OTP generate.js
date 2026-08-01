@@ -18,7 +18,7 @@ const sendOTP = async (email) => {
                 service: "gmail",
                 auth: {
                     user: 'yourcareerbridge.app@gmail.com',
-                    pass: "ztdz rzmj hyxe wzbr"
+                    pass: "dbjo hhus xsdo rouq"
                 }
             })
 
