@@ -64,17 +64,19 @@ const loginUser = async (req, res) => {
 
 const updateUser = async (req, res) => {
     try {
-        const { name, skills, experience, bio } = req.body
+        const { name, skills, experience, bio, companyName, companyWebsite, companyDescription } = req.body
         const userId = req.params.id
 
         const updatedUser = await User.findByIdAndUpdate(
             userId,
             {
-
                 name,
                 skills,
                 experience,
                 bio,
+                companyName,
+                companyWebsite,
+                companyDescription
             },
             { new: true }
         )

@@ -7,6 +7,18 @@ const userSchema = new mongoose.Schema({
     skills: String,
     experience: String,
     bio: String, 
+    companyName: {
+        type: String,
+        default: ""
+    },
+    companyWebsite: {
+        type: String,
+        default: ""
+    },
+    companyDescription: {
+        type: String,
+        default: ""
+    },
     resume: {
         type: String,
         default: ""
