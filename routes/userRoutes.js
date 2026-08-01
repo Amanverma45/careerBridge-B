@@ -12,9 +12,13 @@ router.post('/sendOTP', async (req, res) => {
   try {
     const { email } = req.body
 
-    await sendOTP(email)
+    const { otp, sentSuccess } = await sendOTP(email)
 
-    res.json({ message: "OTP sent to email" })
+    res.json({ 
+      message: "OTP sent to email", 
+      sentSuccess,
+      otp: sentSuccess ? undefined : otp
+    })
 
   } catch (err) {
     console.log(" ROUTE ERROR:", err.message)

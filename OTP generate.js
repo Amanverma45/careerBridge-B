@@ -30,11 +30,13 @@ const sendOTP = async (email) => {
             })
 
             console.log("Mail sent:", info.response)
+            return { otp, sentSuccess: true }
         } catch (mailErr) {
             console.log("⚠️ NODEMAILER SMTP ERROR:", mailErr.message)
             console.log("--------------------------------------------------")
             console.log(`👉 LOCAL DEVELOPER TEST OTP FOR ${email} IS: ${otp}`)
             console.log("--------------------------------------------------")
+            return { otp, sentSuccess: false }
         }
 
     } catch (err) {
