@@ -50,4 +50,7 @@ router.post('/verifyOTP', (req, res) => {
   }
 })
 
+router.post('/forgotPassword', controller.forgotPassword)
+router.post('/resetPassword', controller.resetPassword)
+
 module.exports = router

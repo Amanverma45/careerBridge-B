@@ -89,4 +89,65 @@ const updateUser = async (req, res) => {
 }
 
 
-module.exports = { saveUser, loginUser, updateUser }
+const forgotPassword = async (req, res) => {
+    try {
+        const { email } = req.body
+        if (!email) {
+            return res.status(400).json({ message: "Email is required" })
+        }
+
+        const user = await User.findOne({ email: email.toLowerCase() })
+        if (!user) {
+            return res.status(404).json({ message: "User not found with this email" })
+        }
+
+        const { sendOTP } = require('../OTP generate.js')
+        const { otp, sentSuccess } = await sendOTP(email)
+
+        res.status(200).json({ 
+            message: "Password reset OTP sent to email", 
+            sentSuccess,
+            otp: sentSuccess ? undefined : otp
+        })
+
+    } catch (error) {
+        console.log("FORGOT PASSWORD ERROR:", error)
+        res.status(500).json({ message: error.message })
+    }
+}
+
+const resetPassword = async (req, res) => {
+    try {
+        const { email, otp, newPassword } = req.body
+        if (!email || !otp || !newPassword) {
+            return res.status(400).json({ message: "All fields are required" })
+        }
+
+        const { otpStore } = require('../OTP generate.js')
+        const normalizedEmail = email.toLowerCase().trim()
+        const storedOtp = otpStore[normalizedEmail]
+
+        if (!storedOtp || String(storedOtp) !== String(otp)) {
+            return res.status(400).json({ message: "Invalid or expired OTP" })
+        }
+
+        const user = await User.findOne({ email: normalizedEmail })
+        if (!user) {
+            return res.status(404).json({ message: "User not found" })
+        }
+
+        const hashpassword = await bcrypt.hash(newPassword, 10)
+        user.password = hashpassword
+        await user.save()
+
+        delete otpStore[normalizedEmail]
+
+        res.status(200).json({ message: "Password reset successful" })
+
+    } catch (error) {
+        console.log("RESET PASSWORD ERROR:", error)
+        res.status(500).json({ message: error.message })
+    }
+}
+
+module.exports = { saveUser, loginUser, updateUser, forgotPassword, resetPassword }
