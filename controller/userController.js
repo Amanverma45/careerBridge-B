@@ -67,16 +67,37 @@ const updateUser = async (req, res) => {
         const { name, skills, experience, bio, companyName, companyWebsite, companyDescription } = req.body
         const userId = req.params.id
 
+        const userObj = await User.findById(userId)
+        if (!userObj) {
+            return res.status(404).json({ message: "User not found" })
+        }
+
+        const updateData = { name }
+        const unsetData = {}
+
+        if (userObj.role === 'recruiter') {
+            updateData.companyName = companyName
+            updateData.companyWebsite = companyWebsite
+            updateData.companyDescription = companyDescription
+            
+            unsetData.skills = ""
+            unsetData.experience = ""
+            unsetData.bio = ""
+        } else {
+            updateData.skills = skills
+            updateData.experience = experience
+            updateData.bio = bio
+
+            unsetData.companyName = ""
+            unsetData.companyWebsite = ""
+            unsetData.companyDescription = ""
+        }
+
         const updatedUser = await User.findByIdAndUpdate(
             userId,
             {
-                name,
-                skills,
-                experience,
-                bio,
-                companyName,
-                companyWebsite,
-                companyDescription
+                $set: updateData,
+                $unset: unsetData
             },
             { new: true }
         )
