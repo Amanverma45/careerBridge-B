@@ -83,6 +83,8 @@ const updateUser = async (req, res) => {
             unsetData.skills = ""
             unsetData.experience = ""
             unsetData.bio = ""
+            unsetData.resume = ""
+            unsetData.resumePublicId = ""
         } else {
             updateData.skills = skills
             updateData.experience = experience
