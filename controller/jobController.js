@@ -3,11 +3,11 @@ const express = require('express')
 
 // job seeker
 const createJob = async (req, res) => {
-    const { title, company, location, salary, description, jobType, postedBy } = req.body
+    const { title, company, location, salary, description, jobType, postedBy, skills, isPremium } = req.body
 
     try {
         if (!title || !company || !location || !salary || !description || !jobType || !postedBy) {
-            return res.status(400).json({ message: "All Feilds are Required" })
+            return res.status(400).json({ message: "All Fields are Required" })
         }
         const newJob = new jobModel({
             title,
@@ -16,7 +16,9 @@ const createJob = async (req, res) => {
             salary,
             description,
             jobType,
-            postedBy: postedBy
+            postedBy: postedBy,
+            skills: skills || "",
+            isPremium: isPremium || false
         })
         await newJob.save()
         res.status(201).json({ message: "Job created successfully", job: newJob })
@@ -68,7 +70,7 @@ const deleteJob = async (req, res) => {
 const updateJob = async (req, res) => {
     try {
         const jobId = req.params.id
-        const { title, company, location, salary, description, jobType } = req.body
+        const { title, company, location, salary, description, jobType, skills, isPremium } = req.body
 
         const updatedJob = await jobModel.findByIdAndUpdate(
             jobId,
@@ -78,7 +80,9 @@ const updateJob = async (req, res) => {
                 location,
                 salary,
                 description,
-                jobType
+                jobType,
+                skills,
+                isPremium
             },
             { new: true }
         )

@@ -11,7 +11,11 @@ const userSchema = new mongoose.Schema({
     companyWebsite: String,
     companyDescription: String,
     resume: String,
-    resumePublicId: String
+    resumePublicId: String,
+    isPremium: {
+        type: Boolean,
+        default: false
+    }
 })
 const user = new mongoose.model('user', userSchema)
 module.exports = user

@@ -64,7 +64,7 @@ const loginUser = async (req, res) => {
 
 const updateUser = async (req, res) => {
     try {
-        const { name, skills, experience, bio, companyName, companyWebsite, companyDescription } = req.body
+        const { name, skills, experience, bio, companyName, companyWebsite, companyDescription, isPremium } = req.body
         const userId = req.params.id
 
         const userObj = await User.findById(userId)
@@ -89,6 +89,9 @@ const updateUser = async (req, res) => {
             updateData.skills = skills
             updateData.experience = experience
             updateData.bio = bio
+            if (isPremium !== undefined) {
+                updateData.isPremium = isPremium
+            }
 
             unsetData.companyName = ""
             unsetData.companyWebsite = ""
