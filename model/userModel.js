@@ -15,7 +15,11 @@ const userSchema = new mongoose.Schema({
     isPremium: {
         type: Boolean,
         default: false
-    }
+    },
+    savedJobs: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'job'
+    }]
 })
 const user = new mongoose.model('user', userSchema)
 module.exports = user

@@ -184,4 +184,60 @@ const resetPassword = async (req, res) => {
     }
 }
 
-module.exports = { saveUser, loginUser, updateUser, forgotPassword, resetPassword }
+const toggleSaveJob = async (req, res) => {
+    try {
+        const { userId, jobId } = req.body;
+        if (!userId || !jobId) {
+            return res.status(400).json({ message: "userId and jobId are required" });
+        }
+
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        if (!user.savedJobs) {
+            user.savedJobs = [];
+        }
+
+        const index = user.savedJobs.indexOf(jobId);
+        let isSaved = false;
+
+        if (index > -1) {
+            user.savedJobs.splice(index, 1);
+            isSaved = false;
+        } else {
+            user.savedJobs.push(jobId);
+            isSaved = true;
+        }
+
+        await user.save();
+        res.status(200).json({
+            message: isSaved ? "Job saved successfully" : "Job removed from saved list",
+            savedJobs: user.savedJobs,
+            isSaved
+        });
+
+    } catch (error) {
+        console.log("TOGGLE SAVE JOB ERROR:", error);
+        res.status(500).json({ message: error.message });
+    }
+}
+
+const getSavedJobs = async (req, res) => {
+    try {
+        const { userId } = req.params;
+        const user = await User.findById(userId).populate('savedJobs');
+
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        res.status(200).json(user.savedJobs || []);
+    } catch (error) {
+        console.log("GET SAVED JOBS ERROR:", error);
+        res.status(500).json({ message: error.message });
+    }
+}
+
+module.exports = { saveUser, loginUser, updateUser, forgotPassword, resetPassword, toggleSaveJob, getSavedJobs }

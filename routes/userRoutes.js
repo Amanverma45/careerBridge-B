@@ -52,5 +52,7 @@ router.post('/verifyOTP', (req, res) => {
 
 router.post('/forgotPassword', controller.forgotPassword)
 router.post('/resetPassword', controller.resetPassword)
+router.post('/toggleSaveJob', controller.toggleSaveJob)
+router.get('/savedJobs/:userId', controller.getSavedJobs)
 
 module.exports = router
