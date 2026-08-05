@@ -42,7 +42,7 @@ const getJob = async (req, res) => {
 const getRecruiterJobs = async (req, res) => {
     const { userId } = req.params
     try {
-        const jobs = await jobModel.find({ postedBy: userId })
+        const jobs = await jobModel.find({ postedBy: userId }).sort({ createdAt: -1 })
         res.status(201).json(jobs)
     } catch (error) {
         console.log(error.message)
