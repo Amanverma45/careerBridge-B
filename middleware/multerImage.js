@@ -26,7 +26,7 @@ const uploadImage = multer({
       cb(new Error("Only images (JPEG/PNG/WEBP) are allowed"), false);
     }
   },
-  limits: { fileSize: 3 * 1024 * 1024 } // 3MB limit
+  limits: { fileSize: 10 * 1024 * 1024 } // 10MB limit
 });
 
 module.exports = uploadImage;
