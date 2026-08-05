@@ -3,9 +3,11 @@ const { sendOTP, otpStore } = require('../OTP generate.js')
 const express = require('express')
 const router = express.Router()
 
+const uploadImage = require('../middleware/multerImage.js')
 router.post('/saveUser', controller.saveUser)
 router.post('/loginUser', controller.loginUser)
 router.put('/updateUser/:id', controller.updateUser)
+router.post('/uploadPhoto', uploadImage.single('photo'), controller.uploadProfilePhoto)
 
 // send OTP
 router.post('/sendOTP', async (req, res) => {

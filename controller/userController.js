@@ -64,7 +64,11 @@ const loginUser = async (req, res) => {
 
 const updateUser = async (req, res) => {
     try {
-        const { name, skills, experience, bio, companyName, companyWebsite, companyDescription, isPremium } = req.body
+        const { 
+            name, skills, experience, bio, companyName, companyWebsite, companyDescription, isPremium,
+            phone, location, educationGrad, education12, education10, experienceCompany, experienceRole,
+            linkedin, github, portfolio, certification
+        } = req.body
         const userId = req.params.id
 
         const userObj = await User.findById(userId)
@@ -85,6 +89,19 @@ const updateUser = async (req, res) => {
             unsetData.bio = ""
             unsetData.resume = ""
             unsetData.resumePublicId = ""
+            unsetData.phone = ""
+            unsetData.location = ""
+            unsetData.educationGrad = ""
+            unsetData.education12 = ""
+            unsetData.education10 = ""
+            unsetData.experienceCompany = ""
+            unsetData.experienceRole = ""
+            unsetData.linkedin = ""
+            unsetData.github = ""
+            unsetData.portfolio = ""
+            unsetData.certification = ""
+            unsetData.profilePhoto = ""
+            unsetData.profilePhotoPublicId = ""
         } else {
             updateData.skills = skills
             updateData.experience = experience
@@ -92,6 +109,18 @@ const updateUser = async (req, res) => {
             if (isPremium !== undefined) {
                 updateData.isPremium = isPremium
             }
+
+            updateData.phone = phone
+            updateData.location = location
+            updateData.educationGrad = educationGrad
+            updateData.education12 = education12
+            updateData.education10 = education10
+            updateData.experienceCompany = experienceCompany
+            updateData.experienceRole = experienceRole
+            updateData.linkedin = linkedin
+            updateData.github = github
+            updateData.portfolio = portfolio
+            updateData.certification = certification
 
             unsetData.companyName = ""
             unsetData.companyWebsite = ""
@@ -240,4 +269,38 @@ const getSavedJobs = async (req, res) => {
     }
 }
 
-module.exports = { saveUser, loginUser, updateUser, forgotPassword, resetPassword, toggleSaveJob, getSavedJobs }
+const uploadProfilePhoto = async (req, res) => {
+    try {
+        const { userId } = req.body;
+        if (!req.file) return res.status(400).json({ message: "No file uploaded" });
+        if (!userId) return res.status(400).json({ message: "User ID missing" });
+
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        if (user.profilePhotoPublicId) {
+            const cloudinary = require("../config/cloudinary");
+            try {
+                await cloudinary.uploader.destroy(user.profilePhotoPublicId);
+            } catch (err) {
+                console.error("Cloudinary error during photo replace:", err);
+            }
+        }
+
+        user.profilePhoto = req.file.path;
+        user.profilePhotoPublicId = req.file.filename;
+        await user.save();
+
+        res.status(200).json({
+            message: "Profile photo uploaded successfully",
+            user
+        });
+    } catch (error) {
+        console.error("Upload photo error:", error);
+        res.status(500).json({ message: error.message });
+    }
+}
+
+module.exports = { saveUser, loginUser, updateUser, forgotPassword, resetPassword, toggleSaveJob, getSavedJobs, uploadProfilePhoto }
