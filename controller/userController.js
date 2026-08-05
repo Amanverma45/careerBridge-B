@@ -303,4 +303,35 @@ const uploadProfilePhoto = async (req, res) => {
     }
 }
 
-module.exports = { saveUser, loginUser, updateUser, forgotPassword, resetPassword, toggleSaveJob, getSavedJobs, uploadProfilePhoto }
+const removeProfilePhoto = async (req, res) => {
+    try {
+        const { userId } = req.body;
+        if (!userId) return res.status(400).json({ message: "User ID missing" });
+
+        const userObj = await User.findById(userId);
+        if (!userObj) return res.status(404).json({ message: "User not found" });
+
+        if (userObj.profilePhotoPublicId) {
+            const cloudinary = require("../config/cloudinary");
+            try {
+                await cloudinary.uploader.destroy(userObj.profilePhotoPublicId);
+            } catch (err) {
+                console.error("Cloudinary error during photo removal:", err);
+            }
+        }
+
+        userObj.profilePhoto = undefined;
+        userObj.profilePhotoPublicId = undefined;
+        await userObj.save();
+
+        res.status(200).json({
+            message: "Profile photo removed successfully",
+            user: userObj
+        });
+    } catch (error) {
+        console.error("Remove photo error:", error);
+        res.status(500).json({ message: error.message });
+    }
+}
+
+module.exports = { saveUser, loginUser, updateUser, forgotPassword, resetPassword, toggleSaveJob, getSavedJobs, uploadProfilePhoto, removeProfilePhoto }

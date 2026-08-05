@@ -8,6 +8,7 @@ router.post('/saveUser', controller.saveUser)
 router.post('/loginUser', controller.loginUser)
 router.put('/updateUser/:id', controller.updateUser)
 router.post('/uploadPhoto', uploadImage.single('photo'), controller.uploadProfilePhoto)
+router.post('/removePhoto', controller.removeProfilePhoto)
 
 // send OTP
 router.post('/sendOTP', async (req, res) => {
