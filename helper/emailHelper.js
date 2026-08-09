@@ -10,6 +10,7 @@ const sendStatusEmail = async (candidateEmail, candidateName, companyName, jobTi
             }
         });
 
+        const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
         const isShortlisted = status === "shortlisted";
         const subject = isShortlisted 
             ? `Application Update: You are Shortlisted for ${jobTitle} at ${companyName}`
@@ -49,7 +50,7 @@ const sendStatusEmail = async (candidateEmail, candidateName, companyName, jobTi
                 <p class="message" style="font-size: 16px; font-weight: bold; margin-bottom: 8px;">${greeting}</p>
                 <p class="message">${content}</p>
                 <div style="text-align: center; margin-top: 10px;">
-                    <a href="http://localhost:5173/profile" class="btn" style="color: #ffffff !important;">Open / View Application</a>
+                    <a href="${frontendUrl}/profile" class="btn" style="color: #ffffff !important;">Open / View Application</a>
                 </div>
                 <div class="footer">
                     This is an automated notification from CareerBridge. Please do not reply to this email.
