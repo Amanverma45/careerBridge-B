@@ -6,6 +6,14 @@ const { validateText, validateSalary } = require('../helper/validationHelper.js'
 const createJob = async (req, res) => {
     const { title, company, location, salary, description, jobType, postedBy, skills, isPremium } = req.body
 
+    // Authorization checks
+    if (req.user.role !== 'recruiter' && req.user.role !== 'admin') {
+        return res.status(403).json({ message: "Access denied. Only recruiters and admins can post jobs." })
+    }
+    if (req.user._id.toString() !== postedBy && req.user.role !== 'admin') {
+        return res.status(403).json({ message: "Access denied. You cannot post a job on behalf of another user." })
+    }
+
     try {
         if (!title || !company || !location || !salary || !description || !jobType || !postedBy) {
             return res.status(400).json({ message: "All Fields are Required" })
@@ -63,6 +71,9 @@ const getJob = async (req, res) => {
 }
 const getRecruiterJobs = async (req, res) => {
     const { userId } = req.params
+    if (req.user._id.toString() !== userId && req.user.role !== 'admin') {
+        return res.status(403).json({ message: "Access denied. You can only view your own jobs." })
+    }
     try {
         const jobs = await jobModel.find({ postedBy: userId }).sort({ createdAt: -1 })
         res.status(201).json(jobs)
@@ -75,6 +86,15 @@ const getRecruiterJobs = async (req, res) => {
 const deleteJob = async (req, res) => {
     try {
         const jobId = req.params.id
+
+        const job = await jobModel.findById(jobId)
+        if (!job) {
+            return res.status(404).json({ message: "job not found" })
+        }
+
+        if (req.user._id.toString() !== job.postedBy.toString() && req.user.role !== 'admin') {
+            return res.status(403).json({ message: "Access denied. You can only delete your own jobs." })
+        }
 
         const deletejob = await jobModel.findByIdAndDelete(jobId)
 
@@ -93,6 +113,15 @@ const updateJob = async (req, res) => {
     try {
         const jobId = req.params.id
         const { title, company, location, salary, description, jobType, skills, isPremium } = req.body
+
+        const job = await jobModel.findById(jobId)
+        if (!job) {
+            return res.status(404).json({ message: "Job not found" })
+        }
+
+        if (req.user._id.toString() !== job.postedBy.toString() && req.user.role !== 'admin') {
+            return res.status(403).json({ message: "Access denied. You can only update your own jobs." })
+        }
 
         // Validate text and salary fields
         if (title) {

@@ -98,6 +98,10 @@ const updateUser = async (req, res) => {
             return res.status(404).json({ message: "User not found" })
         }
 
+        if (req.user._id.toString() !== userId && req.user.role !== 'admin') {
+            return res.status(403).json({ message: "Access denied. You can only update your own profile." })
+        }
+
         // Validate text / URL / Phone values in payload
         if (name) {
             const nameError = validateText(name, "Name");
@@ -325,6 +329,10 @@ const toggleSaveJob = async (req, res) => {
             return res.status(404).json({ message: "User not found" });
         }
 
+        if (req.user._id.toString() !== userId && req.user.role !== 'admin') {
+            return res.status(403).json({ message: "Access denied. You cannot modify saved jobs for another user." });
+        }
+
         if (!user.savedJobs) {
             user.savedJobs = [];
         }
@@ -362,6 +370,10 @@ const getSavedJobs = async (req, res) => {
             return res.status(404).json({ message: "User not found" });
         }
 
+        if (req.user._id.toString() !== userId && req.user.role !== 'admin') {
+            return res.status(403).json({ message: "Access denied. You can only view your own saved jobs." });
+        }
+
         res.status(200).json(user.savedJobs || []);
     } catch (error) {
         console.log("GET SAVED JOBS ERROR:", error);
@@ -378,6 +390,10 @@ const uploadProfilePhoto = async (req, res) => {
         const user = await User.findById(userId);
         if (!user) {
             return res.status(404).json({ message: "User not found" });
+        }
+
+        if (req.user._id.toString() !== userId && req.user.role !== 'admin') {
+            return res.status(403).json({ message: "Access denied. You can only modify your own profile photo." });
         }
 
         if (user.profilePhotoPublicId) {
@@ -410,6 +426,10 @@ const removeProfilePhoto = async (req, res) => {
 
         const userObj = await User.findById(userId);
         if (!userObj) return res.status(404).json({ message: "User not found" });
+
+        if (req.user._id.toString() !== userId && req.user.role !== 'admin') {
+            return res.status(403).json({ message: "Access denied. You can only modify your own profile photo." });
+        }
 
         if (userObj.profilePhotoPublicId) {
             const cloudinary = require("../config/cloudinary");

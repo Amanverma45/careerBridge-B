@@ -2,13 +2,14 @@ const controller = require('../controller/userController.js')
 const { sendOTP, otpStore } = require('../OTP generate.js')   
 const express = require('express')
 const router = express.Router()
+const { verifyToken } = require('../middleware/authMiddleware.js')
 
 const uploadImage = require('../middleware/multerImage.js')
 router.post('/saveUser', controller.saveUser)
 router.post('/loginUser', controller.loginUser)
-router.put('/updateUser/:id', controller.updateUser)
-router.post('/uploadPhoto', uploadImage.single('photo'), controller.uploadProfilePhoto)
-router.post('/removePhoto', controller.removeProfilePhoto)
+router.put('/updateUser/:id', verifyToken, controller.updateUser)
+router.post('/uploadPhoto', verifyToken, uploadImage.single('photo'), controller.uploadProfilePhoto)
+router.post('/removePhoto', verifyToken, controller.removeProfilePhoto)
 
 // send OTP
 router.post('/sendOTP', async (req, res) => {
@@ -55,7 +56,7 @@ router.post('/verifyOTP', (req, res) => {
 
 router.post('/forgotPassword', controller.forgotPassword)
 router.post('/resetPassword', controller.resetPassword)
-router.post('/toggleSaveJob', controller.toggleSaveJob)
-router.get('/savedJobs/:userId', controller.getSavedJobs)
+router.post('/toggleSaveJob', verifyToken, controller.toggleSaveJob)
+router.get('/savedJobs/:userId', verifyToken, controller.getSavedJobs)
 
 module.exports = router
