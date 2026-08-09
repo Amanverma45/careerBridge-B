@@ -16,14 +16,15 @@ const saveUser = async (req, res) => {
         }
 
         // Secure admin role assignment
+        const adminEmail = (process.env.ADMIN_EMAIL || 'av478136@gmail.com').toLowerCase().trim()
         let assignedRole = role
         if (assignedRole === 'admin') {
-            if (normalizedEmail === 'av478136@gmail.com') {
+            if (normalizedEmail === adminEmail) {
                 assignedRole = 'admin'
             } else {
                 assignedRole = 'user'
             }
-        } else if (normalizedEmail === 'av478136@gmail.com') {
+        } else if (normalizedEmail === adminEmail) {
             assignedRole = 'admin'
         }
 
@@ -58,7 +59,8 @@ const loginUser = async (req, res) => {
         }
 
         // Auto-promote developer email to admin if logged in
-        if (normalizedEmail === 'av478136@gmail.com' && user.role !== 'admin') {
+        const adminEmail = (process.env.ADMIN_EMAIL || 'av478136@gmail.com').toLowerCase().trim()
+        if (normalizedEmail === adminEmail && user.role !== 'admin') {
             user.role = 'admin'
             await user.save()
         }
