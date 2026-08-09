@@ -22,6 +22,7 @@ app.get('/', (req, res) => {
 app.use('/api', require('./routes/userRoutes.js'))
 app.use('/job', require('./routes/jobRoutes.js'))
 app.use('/application', require('./routes/applicationRoutes.js'))
+app.use('/admin', require('./routes/adminRoutes.js'))
 
 app.use("/api", resumeRoutes)
 

