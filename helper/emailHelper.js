@@ -11,6 +11,7 @@ const sendStatusEmail = async (candidateEmail, candidateName, companyName, jobTi
         });
 
         const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+        console.log("--- SENDING EMAIL --- FRONTEND URL USED:", frontendUrl);
         const isShortlisted = status === "shortlisted";
         const subject = isShortlisted 
             ? `Application Update: You are Shortlisted for ${jobTitle} at ${companyName}`
