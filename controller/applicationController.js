@@ -41,7 +41,7 @@ const getApplicants = async(req,res)=>{
 
     try{
         const applicants = await Application.find({jobId})
-        .populate('userId','name email resume')
+        .populate('userId')
         .populate('jobId','title company')
 
         res.status(200).json(applicants)
