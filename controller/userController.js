@@ -1,6 +1,7 @@
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const User = require('../model/userModel.js')
+const { validateText, validatePhone, validateUrl } = require('../helper/validationHelper.js')
 
 const saveUser = async (req, res) => {
     try {
@@ -95,6 +96,84 @@ const updateUser = async (req, res) => {
         const userObj = await User.findById(userId)
         if (!userObj) {
             return res.status(404).json({ message: "User not found" })
+        }
+
+        // Validate text / URL / Phone values in payload
+        if (name) {
+            const nameError = validateText(name, "Name");
+            if (nameError) return res.status(400).json({ message: nameError });
+        }
+
+        if (userObj.role === 'recruiter') {
+            if (companyName) {
+                const cnError = validateText(companyName, "Company Name");
+                if (cnError) return res.status(400).json({ message: cnError });
+            }
+            if (companyWebsite) {
+                const cwError = validateUrl(companyWebsite, "Company Website");
+                if (cwError) return res.status(400).json({ message: cwError });
+            }
+            if (companyDescription) {
+                const cdError = validateText(companyDescription, "Company Description");
+                if (cdError) return res.status(400).json({ message: cdError });
+            }
+        } else {
+            if (skills) {
+                const skError = validateText(skills, "Skills");
+                if (skError) return res.status(400).json({ message: skError });
+            }
+            if (experience) {
+                const exError = validateText(experience, "Experience");
+                if (exError) return res.status(400).json({ message: exError });
+            }
+            if (bio) {
+                const bioError = validateText(bio, "Bio");
+                if (bioError) return res.status(400).json({ message: bioError });
+            }
+            if (phone) {
+                const phError = validatePhone(phone);
+                if (phError) return res.status(400).json({ message: phError });
+            }
+            if (location) {
+                const locError = validateText(location, "Location");
+                if (locError) return res.status(400).json({ message: locError });
+            }
+            if (educationGrad) {
+                const edgError = validateText(educationGrad, "Graduation details");
+                if (edgError) return res.status(400).json({ message: edgError });
+            }
+            if (education12) {
+                const ed12Error = validateText(education12, "12th details");
+                if (ed12Error) return res.status(400).json({ message: ed12Error });
+            }
+            if (education10) {
+                const ed10Error = validateText(education10, "10th details");
+                if (ed10Error) return res.status(400).json({ message: ed10Error });
+            }
+            if (experienceCompany) {
+                const ecError = validateText(experienceCompany, "Experience Company");
+                if (ecError) return res.status(400).json({ message: ecError });
+            }
+            if (experienceRole) {
+                const erError = validateText(experienceRole, "Experience Role");
+                if (erError) return res.status(400).json({ message: erError });
+            }
+            if (linkedin) {
+                const lnError = validateUrl(linkedin, "LinkedIn URL");
+                if (lnError) return res.status(400).json({ message: lnError });
+            }
+            if (github) {
+                const ghError = validateUrl(github, "GitHub URL");
+                if (ghError) return res.status(400).json({ message: ghError });
+            }
+            if (portfolio) {
+                const ptError = validateUrl(portfolio, "Portfolio URL");
+                if (ptError) return res.status(400).json({ message: ptError });
+            }
+            if (certification) {
+                const crError = validateText(certification, "Certification");
+                if (crError) return res.status(400).json({ message: crError });
+            }
         }
 
         const updateData = { name }

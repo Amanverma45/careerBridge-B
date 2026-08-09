@@ -1,5 +1,6 @@
 const jobModel = require('../model/jobModel.js')
 const express = require('express')
+const { validateText, validateSalary } = require('../helper/validationHelper.js')
 
 // job seeker
 const createJob = async (req, res) => {
@@ -8,6 +9,27 @@ const createJob = async (req, res) => {
     try {
         if (!title || !company || !location || !salary || !description || !jobType || !postedBy) {
             return res.status(400).json({ message: "All Fields are Required" })
+        }
+
+        // Validate text and salary fields
+        const titleError = validateText(title, "Job Title");
+        if (titleError) return res.status(400).json({ message: titleError });
+
+        const companyError = validateText(company, "Company Name");
+        if (companyError) return res.status(400).json({ message: companyError });
+
+        const locationError = validateText(location, "Location");
+        if (locationError) return res.status(400).json({ message: locationError });
+
+        const salaryError = validateSalary(salary);
+        if (salaryError) return res.status(400).json({ message: salaryError });
+
+        const descriptionError = validateText(description, "Job Description");
+        if (descriptionError) return res.status(400).json({ message: descriptionError });
+
+        if (skills) {
+            const skillsError = validateText(skills, "Required Skills");
+            if (skillsError) return res.status(400).json({ message: skillsError });
         }
         const newJob = new jobModel({
             title,
@@ -71,6 +93,32 @@ const updateJob = async (req, res) => {
     try {
         const jobId = req.params.id
         const { title, company, location, salary, description, jobType, skills, isPremium } = req.body
+
+        // Validate text and salary fields
+        if (title) {
+            const titleError = validateText(title, "Job Title");
+            if (titleError) return res.status(400).json({ message: titleError });
+        }
+        if (company) {
+            const companyError = validateText(company, "Company Name");
+            if (companyError) return res.status(400).json({ message: companyError });
+        }
+        if (location) {
+            const locationError = validateText(location, "Location");
+            if (locationError) return res.status(400).json({ message: locationError });
+        }
+        if (salary) {
+            const salaryError = validateSalary(salary);
+            if (salaryError) return res.status(400).json({ message: salaryError });
+        }
+        if (description) {
+            const descriptionError = validateText(description, "Job Description");
+            if (descriptionError) return res.status(400).json({ message: descriptionError });
+        }
+        if (skills) {
+            const skillsError = validateText(skills, "Required Skills");
+            if (skillsError) return res.status(400).json({ message: skillsError });
+        }
 
         const updatedJob = await jobModel.findByIdAndUpdate(
             jobId,
