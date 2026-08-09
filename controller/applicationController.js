@@ -50,16 +50,33 @@ const getApplicants = async(req,res)=>{
         res.status(500).json({message:"server error"})
     }
 }
+const { sendStatusEmail } = require('../helper/emailHelper.js')
+
 const updateStatus = async (req,res)=>{
   const {id} = req.params
   const {status} = req.body
 
-  const updated = await Application.findByIdAndUpdate(
-    id,
-    {status},
-    {new:true}
-  )
+  try {
+    const updated = await Application.findByIdAndUpdate(
+      id,
+      {status},
+      {new:true}
+    ).populate('userId').populate('jobId')
 
-  res.json(updated)
+    if (updated && (status === "shortlisted" || status === "rejected")) {
+      sendStatusEmail(
+        updated.userId?.email,
+        updated.userId?.name,
+        updated.jobId?.company || "Company",
+        updated.jobId?.title || "Position",
+        status
+      ).catch(err => console.error("Error sending status email:", err));
+    }
+
+    res.json(updated)
+  } catch (error) {
+    console.error("updateStatus error:", error);
+    res.status(500).json({ message: "Server error" });
+  }
 }
 module.exports = { applyJob, getAppliedJobs,getApplicants,updateStatus }
