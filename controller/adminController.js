@@ -27,7 +27,7 @@ const getRecruiters = async (req, res) => {
 // Fetch all jobs
 const getJobs = async (req, res) => {
     try {
-        const jobs = await Job.find().populate('recruiterId', 'name email companyName');
+        const jobs = await Job.find().populate('postedBy', 'name email companyName');
         res.status(200).json(jobs);
     } catch (error) {
         console.error("Admin getJobs error:", error);
@@ -49,10 +49,10 @@ const deleteUser = async (req, res) => {
 
         // If recruiter, delete their posted jobs & applications
         if (userToDelete.role === 'recruiter') {
-            const recruiterJobs = await Job.find({ recruiterId: id });
+            const recruiterJobs = await Job.find({ postedBy: id });
             const jobIds = recruiterJobs.map(job => job._id);
             
-            await Job.deleteMany({ recruiterId: id });
+            await Job.deleteMany({ postedBy: id });
             await Application.deleteMany({ jobId: { $in: jobIds } });
         } else {
             // If candidate, delete their job applications
