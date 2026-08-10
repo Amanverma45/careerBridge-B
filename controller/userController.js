@@ -448,4 +448,73 @@ const removeProfilePhoto = async (req, res) => {
     }
 }
 
-module.exports = { saveUser, loginUser, updateUser, forgotPassword, resetPassword, toggleSaveJob, getSavedJobs, uploadProfilePhoto, removeProfilePhoto }
+const googleLogin = async (req, res) => {
+    try {
+        const { token, role } = req.body;
+        if (!token) {
+            return res.status(400).json({ message: "Google token is required" });
+        }
+
+        const verifyResponse = await fetch(`https://oauth2.googleapis.com/tokeninfo?id_token=${token}`);
+        if (!verifyResponse.ok) {
+            return res.status(400).json({ message: "Invalid or expired Google token" });
+        }
+
+        const payload = await verifyResponse.json();
+        const { email, name, picture } = payload;
+
+        if (!email) {
+            return res.status(400).json({ message: "Could not retrieve email from Google token" });
+        }
+
+        const normalizedEmail = email.toLowerCase().trim();
+        let user = await User.findOne({ email: normalizedEmail });
+
+        const adminEmail = (process.env.ADMIN_EMAIL || 'av478136@gmail.com').toLowerCase().trim();
+
+        if (!user) {
+            // Auto-assign admin if email matches adminEmail
+            let assignedRole = role || 'user';
+            if (normalizedEmail === adminEmail) {
+                assignedRole = 'admin';
+            }
+
+            // Create a randomized secure password placeholder
+            const generatedPass = Math.random().toString(36).slice(-8) + Math.random().toString(36).toUpperCase().slice(-8);
+            const hashedPassword = await bcrypt.hash(generatedPass, 10);
+
+            user = new User({
+                name: name || "Google User",
+                email: normalizedEmail,
+                password: hashedPassword,
+                role: assignedRole,
+                profilePhoto: picture || undefined
+            });
+            await user.save();
+        } else {
+            // Promotes existing user to admin if their email is adminEmail
+            if (normalizedEmail === adminEmail && user.role !== 'admin') {
+                user.role = 'admin';
+                await user.save();
+            }
+        }
+
+        const ourToken = jwt.sign(
+            { userId: user._id, email: user.email },
+            "OUR_SECRETE_KEY",
+            { expiresIn: "24h" }
+        );
+
+        return res.status(200).json({
+            message: "Google login successful",
+            token: ourToken,
+            user
+        });
+
+    } catch (error) {
+        console.error("GOOGLE LOGIN ERROR:", error.message);
+        return res.status(500).json({ message: error.message });
+    }
+}
+
+module.exports = { saveUser, loginUser, googleLogin, updateUser, forgotPassword, resetPassword, toggleSaveJob, getSavedJobs, uploadProfilePhoto, removeProfilePhoto }
