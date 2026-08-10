@@ -102,10 +102,26 @@ const updateUser = async (req, res) => {
             return res.status(403).json({ message: "Access denied. You can only update your own profile." })
         }
 
-        // Validate text / URL / Phone values in payload
-        if (name) {
-            const nameError = validateText(name, "Name");
-            if (nameError) return res.status(400).json({ message: nameError });
+        // Validate phone, location, and socials for both roles
+        if (phone) {
+            const phError = validatePhone(phone);
+            if (phError) return res.status(400).json({ message: phError });
+        }
+        if (location) {
+            const locError = validateText(location, "Location");
+            if (locError) return res.status(400).json({ message: locError });
+        }
+        if (linkedin) {
+            const lnError = validateUrl(linkedin, "LinkedIn URL");
+            if (lnError) return res.status(400).json({ message: lnError });
+        }
+        if (github) {
+            const ghError = validateUrl(github, "GitHub URL");
+            if (ghError) return res.status(400).json({ message: ghError });
+        }
+        if (portfolio) {
+            const ptError = validateUrl(portfolio, "Portfolio URL");
+            if (ptError) return res.status(400).json({ message: ptError });
         }
 
         if (userObj.role === 'recruiter') {
@@ -134,14 +150,6 @@ const updateUser = async (req, res) => {
                 const bioError = validateText(bio, "Bio");
                 if (bioError) return res.status(400).json({ message: bioError });
             }
-            if (phone) {
-                const phError = validatePhone(phone);
-                if (phError) return res.status(400).json({ message: phError });
-            }
-            if (location) {
-                const locError = validateText(location, "Location");
-                if (locError) return res.status(400).json({ message: locError });
-            }
             if (educationGrad) {
                 const edgError = validateText(educationGrad, "Graduation details");
                 if (edgError) return res.status(400).json({ message: edgError });
@@ -162,25 +170,20 @@ const updateUser = async (req, res) => {
                 const erError = validateText(experienceRole, "Experience Role");
                 if (erError) return res.status(400).json({ message: erError });
             }
-            if (linkedin) {
-                const lnError = validateUrl(linkedin, "LinkedIn URL");
-                if (lnError) return res.status(400).json({ message: lnError });
-            }
-            if (github) {
-                const ghError = validateUrl(github, "GitHub URL");
-                if (ghError) return res.status(400).json({ message: ghError });
-            }
-            if (portfolio) {
-                const ptError = validateUrl(portfolio, "Portfolio URL");
-                if (ptError) return res.status(400).json({ message: ptError });
-            }
             if (certification) {
                 const crError = validateText(certification, "Certification");
                 if (crError) return res.status(400).json({ message: crError });
             }
         }
 
-        const updateData = { name }
+        const updateData = { 
+            name,
+            phone,
+            location,
+            linkedin,
+            github,
+            portfolio
+        }
         const unsetData = {}
 
         if (userObj.role === 'recruiter') {
@@ -193,19 +196,12 @@ const updateUser = async (req, res) => {
             unsetData.bio = ""
             unsetData.resume = ""
             unsetData.resumePublicId = ""
-            unsetData.phone = ""
-            unsetData.location = ""
             unsetData.educationGrad = ""
             unsetData.education12 = ""
             unsetData.education10 = ""
             unsetData.experienceCompany = ""
             unsetData.experienceRole = ""
-            unsetData.linkedin = ""
-            unsetData.github = ""
-            unsetData.portfolio = ""
             unsetData.certification = ""
-            unsetData.profilePhoto = ""
-            unsetData.profilePhotoPublicId = ""
         } else {
             updateData.skills = skills
             updateData.experience = experience
@@ -214,16 +210,11 @@ const updateUser = async (req, res) => {
                 updateData.isPremium = isPremium
             }
 
-            updateData.phone = phone
-            updateData.location = location
             updateData.educationGrad = educationGrad
             updateData.education12 = education12
             updateData.education10 = education10
             updateData.experienceCompany = experienceCompany
             updateData.experienceRole = experienceRole
-            updateData.linkedin = linkedin
-            updateData.github = github
-            updateData.portfolio = portfolio
             updateData.certification = certification
 
             unsetData.companyName = ""
