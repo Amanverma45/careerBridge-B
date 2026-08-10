@@ -102,7 +102,7 @@ const updateUser = async (req, res) => {
             return res.status(403).json({ message: "Access denied. You can only update your own profile." })
         }
 
-        // Validate phone, location, and socials for both roles
+        // Validate phone and location for both roles
         if (phone) {
             const phError = validatePhone(phone);
             if (phError) return res.status(400).json({ message: phError });
@@ -110,18 +110,6 @@ const updateUser = async (req, res) => {
         if (location) {
             const locError = validateText(location, "Location");
             if (locError) return res.status(400).json({ message: locError });
-        }
-        if (linkedin) {
-            const lnError = validateUrl(linkedin, "LinkedIn URL");
-            if (lnError) return res.status(400).json({ message: lnError });
-        }
-        if (github) {
-            const ghError = validateUrl(github, "GitHub URL");
-            if (ghError) return res.status(400).json({ message: ghError });
-        }
-        if (portfolio) {
-            const ptError = validateUrl(portfolio, "Portfolio URL");
-            if (ptError) return res.status(400).json({ message: ptError });
         }
 
         if (userObj.role === 'recruiter') {
@@ -170,6 +158,18 @@ const updateUser = async (req, res) => {
                 const erError = validateText(experienceRole, "Experience Role");
                 if (erError) return res.status(400).json({ message: erError });
             }
+            if (linkedin) {
+                const lnError = validateUrl(linkedin, "LinkedIn URL");
+                if (lnError) return res.status(400).json({ message: lnError });
+            }
+            if (github) {
+                const ghError = validateUrl(github, "GitHub URL");
+                if (ghError) return res.status(400).json({ message: ghError });
+            }
+            if (portfolio) {
+                const ptError = validateUrl(portfolio, "Portfolio URL");
+                if (ptError) return res.status(400).json({ message: ptError });
+            }
             if (certification) {
                 const crError = validateText(certification, "Certification");
                 if (crError) return res.status(400).json({ message: crError });
@@ -179,10 +179,7 @@ const updateUser = async (req, res) => {
         const updateData = { 
             name,
             phone,
-            location,
-            linkedin,
-            github,
-            portfolio
+            location
         }
         const unsetData = {}
 
@@ -201,6 +198,9 @@ const updateUser = async (req, res) => {
             unsetData.education10 = ""
             unsetData.experienceCompany = ""
             unsetData.experienceRole = ""
+            unsetData.linkedin = ""
+            unsetData.github = ""
+            unsetData.portfolio = ""
             unsetData.certification = ""
         } else {
             updateData.skills = skills
@@ -215,6 +215,9 @@ const updateUser = async (req, res) => {
             updateData.education10 = education10
             updateData.experienceCompany = experienceCompany
             updateData.experienceRole = experienceRole
+            updateData.linkedin = linkedin
+            updateData.github = github
+            updateData.portfolio = portfolio
             updateData.certification = certification
 
             unsetData.companyName = ""
