@@ -1,9 +1,7 @@
 const jwt = require('jsonwebtoken');
 const User = require('../model/userModel.js');
 
-/**
- * Middleware to verify JWT token and attach user to req.user
- */
+
 const verifyToken = async (req, res, next) => {
     try {
         const authHeader = req.headers.authorization;
